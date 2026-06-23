@@ -3,7 +3,7 @@ import ClubImage from "./ClubImage";
 function RadarCard({ alert, distance, onShowDetail }) {
   return (
     <article className={`result-card result-card--${alert.color}`}>
-      <ClubImage club={alert.club} size={44} />
+      <ClubImage club={alert.club} size={54} />
 
       <div className="rc-content">
         <div className="rc-header">

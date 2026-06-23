@@ -18,7 +18,7 @@ function ResultCard({ pista, onShowDetail }) {
 
   return (
     <article className={`result-card result-card--${pista.color}`}>
-      <ClubImage club={pista.club} size={44} />
+      <ClubImage club={pista.club} size={54} />
 
       <div className="rc-content">
         <div className="rc-header">
