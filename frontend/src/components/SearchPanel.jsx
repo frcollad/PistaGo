@@ -34,14 +34,43 @@ function ChipRow({ options, value, onChange }) {
   );
 }
 
-function toDateInputValue(offsetDays) {
-  const d = new Date();
-  d.setDate(d.getDate() + offsetDays);
-  return d.toISOString().slice(0, 10);
+const DAY_NAMES = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"];
+
+function DayStrip({ fecha, onFecha }) {
+  const days = Array.from({ length: 8 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    return {
+      iso: d.toISOString().slice(0, 10),
+      label: i === 0 ? "Hoy" : DAY_NAMES[d.getDay()],
+      num: d.getDate(),
+    };
+  });
+
+  return (
+    <div className="day-strip">
+      <button
+        className={`day-card${fecha === "all" ? " day-card--on" : ""}`}
+        onClick={() => onFecha("all")}
+      >
+        <span className="day-label">Todos</span>
+        <span className="day-num">·</span>
+      </button>
+      {days.map(({ iso, label, num }) => (
+        <button
+          key={iso}
+          className={`day-card${fecha === iso ? " day-card--on" : ""}`}
+          onClick={() => onFecha(iso)}
+        >
+          <span className="day-label">{label}</span>
+          <span className="day-num">{num}</span>
+        </button>
+      ))}
+    </div>
+  );
 }
 
 function SearchPanel({ fecha, onFecha, franja, onFranja, nivel, onNivel, niveles, mostrarNivel }) {
-  const today = toDateInputValue(0);
   const franjaOpts = [
     { value: "all",    label: "Cualquier hora" },
     { value: "manana", label: "Mañana" },
@@ -58,13 +87,7 @@ function SearchPanel({ fecha, onFecha, franja, onFranja, nivel, onNivel, niveles
       <div className="sp-row">
         <div className="sp-group">
           <small className="sp-label">Día</small>
-          <input
-            type="date"
-            className="sp-date-input"
-            value={fecha === "all" ? "" : fecha}
-            min={today}
-            onChange={(e) => onFecha(e.target.value || "all")}
-          />
+          <DayStrip fecha={fecha} onFecha={onFecha} />
         </div>
       </div>
       <div className="sp-row">
