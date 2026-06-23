@@ -191,11 +191,112 @@ button { font: inherit; }
   color: var(--muted);
 }
 
+/* ── Filter Bar (collapsible toggle) ── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: white;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  user-select: none;
+}
+
+.filter-bar-icon {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  position: relative;
+}
+
+.filter-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green-dark);
+  display: inline-block;
+  margin-left: 2px;
+}
+
+.filter-bar-chips {
+  flex: 1;
+  display: flex;
+  gap: 5px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.filter-bar-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.filter-bar-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--green-bg);
+  color: var(--green-dark);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.filter-chevron {
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.filter-chevron.open {
+  transform: rotate(180deg);
+}
+
+.filter-panel-wrap {
+  background: white;
+  border-bottom: 1px solid var(--line);
+}
+
+.filter-panel-footer {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px 14px;
+}
+
+.fp-clear {
+  flex: 1;
+  height: 36px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fp-apply {
+  flex: 2;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--green-dark);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 /* ── Search Panel ── */
 .search-panel {
   background: white;
-  border-bottom: 1px solid var(--line);
-  padding: 10px 16px 12px;
+  padding: 10px 16px 4px;
 }
 
 .sp-row { margin-bottom: 8px; }
