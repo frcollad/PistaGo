@@ -3,20 +3,16 @@ import SearchPanel from "../components/SearchPanel";
 import ResultCard from "../components/ResultCard";
 import { usePistas } from "../hooks/usePistas";
 
-const FECHA_SHORT = { all: "Cualquier día", hoy: "Hoy", manana: "Mañana", pasado: "Pasado" };
 const FRANJA_SHORT = { all: null, manana: "Mañana", tarde: "Tarde", noche: "Noche" };
 
-function formatFechaStr(offsetDays) {
-  const d = new Date();
-  d.setDate(d.getDate() + offsetDays);
-  return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+function formatDateLabel(isoDate) {
+  const [y, m, d] = isoDate.split("-").map(Number);
+  const today = new Date();
+  const tom = new Date(); tom.setDate(today.getDate() + 1);
+  if (y === today.getFullYear() && m === today.getMonth() + 1 && d === today.getDate()) return "Hoy";
+  if (y === tom.getFullYear() && m === tom.getMonth() + 1 && d === tom.getDate()) return "Mañana";
+  return `${d}/${m}`;
 }
-
-const FECHA_MAP = {
-  hoy: formatFechaStr(0),
-  manana: formatFechaStr(1),
-  pasado: formatFechaStr(2),
-};
 
 function horaEnFranja(strHora, franja) {
   if (franja === "all") return true;
@@ -38,7 +34,7 @@ function SearchScreen({ onShowDetail }) {
 
   const activeSummary = useMemo(() => {
     const parts = [];
-    if (fecha !== "all") parts.push(FECHA_SHORT[fecha]);
+    if (fecha !== "all") parts.push(formatDateLabel(fecha));
     if (franja !== "all") parts.push(FRANJA_SHORT[franja]);
     if (nivel !== "all") parts.push(nivel);
     return parts;
@@ -61,8 +57,8 @@ function SearchScreen({ onShowDetail }) {
       if (tab === "pistas"   && p.color !== "blue")  return false;
       if (fecha !== "all") {
         const d = new Date(p.horaInicio);
-        const pistaFecha = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
-        if (pistaFecha !== FECHA_MAP[fecha]) return false;
+        const pistaISO = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        if (pistaISO !== fecha) return false;
       }
       if (!horaEnFranja(p.strHoraInicio, franja)) return false;
       if (nivel !== "all" && p.nivel !== nivel) return false;

@@ -337,6 +337,25 @@ button { font: inherit; }
   color: white;
 }
 
+.sp-date-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+
+.sp-date-input:focus {
+  border-color: var(--green-dark);
+}
+
 /* ── Tabs ── */
 .result-tabs {
   display: flex;

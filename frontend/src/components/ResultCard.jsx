@@ -12,7 +12,6 @@ function ResultCard({ pista, onShowDetail }) {
     time: pista.time,
     level: pista.nivel,
     spots: pista.info,
-    price: esPista ? "24 €" : "7,50 €",
     source: "TPC Matchpoint",
     color: pista.color,
   };
@@ -42,18 +41,12 @@ function ResultCard({ pista, onShowDetail }) {
 
         <div className="rc-footer">
           <span className="rc-platform">⊞ TPC Matchpoint</span>
-          <div className="rc-action">
-            <div className="rc-price">
-              {esPista ? "24 €" : "7,50 €"}
-              <small>{esPista ? "por pista" : "p. persona"}</small>
-            </div>
-            <button
-              className={`rc-btn rc-btn--${pista.color}`}
-              onClick={() => onShowDetail(detail)}
-            >
-              {pista.button}
-            </button>
-          </div>
+          <button
+            className={`rc-btn rc-btn--${pista.color}`}
+            onClick={() => onShowDetail(detail)}
+          >
+            {pista.button}
+          </button>
         </div>
       </div>
     </article>
