@@ -12,6 +12,7 @@ function ResultCard({ pista, onShowDetail }) {
     time: pista.time,
     level: pista.nivel,
     spots: pista.info,
+    puesto: pista.puesto,
     source: "TPC Matchpoint",
     color: pista.color,
   };

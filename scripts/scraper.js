@@ -143,6 +143,10 @@ async function scrapeClub(club) {
           const end = parseMsDate(ocupacion.HoraFin);
           if (!start || !end || start < ahora) continue;
 
+          // Log raw fields to discover puesto (derecha/revés/indiferente)
+          const rawKeys = Object.keys(ocupacion).filter(k => k.startsWith("Texto") || k.toLowerCase().includes("puesto") || k.toLowerCase().includes("lado") || k.toLowerCase().includes("posicion"));
+          if (rawKeys.length > 2) console.log(`  [partida raw] ${rawKeys.map(k => `${k}=${ocupacion[k]}`).join(", ")}`);
+
           pistas.push({
             id: `${club.id}-partida-${columna.Id}-${start}`,
             clubId: club.id,
@@ -159,6 +163,7 @@ async function scrapeClub(club) {
             horaFin: end,
             nivel: ocupacion.Texto2 || null,
             plazasLibres: ocupacion.Texto1 ? parseInt(ocupacion.Texto1) : null,
+            puesto: ocupacion.Texto3 || ocupacion.Puesto || ocupacion.Posicion || ocupacion.Lado || null,
           });
         }
       }

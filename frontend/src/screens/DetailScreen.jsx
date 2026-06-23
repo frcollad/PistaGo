@@ -106,6 +106,7 @@ function DetailScreen({ selectedMatch, onBack }) {
           <div className="info-table">
             <InfoRow label="Tipo" value={esPista ? "Pista libre" : "Partido Americano"} />
             {selectedMatch.level && <InfoRow label="Nivel recomendado" value={selectedMatch.level} />}
+            {selectedMatch.puesto && <InfoRow label="Puesto buscado" value={selectedMatch.puesto} />}
             <InfoRow label="Disponibilidad" value={selectedMatch.spots} />
             <InfoRow label="Organizador" value={selectedMatch.club} />
             <InfoRow label="Plataforma" value={selectedMatch.source || "TPC Matchpoint"} />

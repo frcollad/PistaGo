@@ -36,6 +36,7 @@ function pistaToAlert(pista) {
         : "Plazas disponibles",
     nivel: pista.nivel || null,
     plazasLibres: pista.plazasLibres,
+    puesto: pista.puesto || null,
     ago: "En vivo",
     button: esPista ? "Reservar" : "Apuntarme",
     color: esPista ? "blue" : "green",
