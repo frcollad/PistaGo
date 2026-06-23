@@ -88,10 +88,16 @@ function DetailScreen({ selectedMatch, onBack }) {
 
         {/* Court image placeholder */}
         <div className="detail-court-img">
-          <div className="dci-inner">
-            <span>🎾</span>
-            <span>{selectedMatch.club}</span>
-          </div>
+          <svg viewBox="0 0 360 160" xmlns="http://www.w3.org/2000/svg" className="dci-svg">
+            <rect width="360" height="160" fill="#0a1628"/>
+            <rect x="40" y="20" width="280" height="120" rx="4" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5"/>
+            <line x1="180" y1="20" x2="180" y2="140" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5"/>
+            <rect x="40" y="45" width="280" height="70" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+            <line x1="40" y1="80" x2="320" y2="80" stroke="rgba(255,255,255,0.4)" strokeWidth="2"/>
+            <line x1="180" y1="45" x2="180" y2="115" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+            <rect x="155" y="70" width="50" height="20" rx="2" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+            <text x="180" y="155" textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize="9" fontFamily="system-ui">{selectedMatch.club}</text>
+          </svg>
         </div>
 
         {/* Info table */}
@@ -99,7 +105,6 @@ function DetailScreen({ selectedMatch, onBack }) {
           <h2>Información</h2>
           <div className="info-table">
             <InfoRow label="Tipo" value={esPista ? "Pista libre" : "Partido Americano"} />
-            <InfoRow label="Precio" value={esPista ? "24 € por pista" : "7,50 € por persona"} />
             {selectedMatch.level && <InfoRow label="Nivel recomendado" value={selectedMatch.level} />}
             <InfoRow label="Disponibilidad" value={selectedMatch.spots} />
             <InfoRow label="Organizador" value={selectedMatch.club} />
@@ -121,12 +126,8 @@ function DetailScreen({ selectedMatch, onBack }) {
 
       {/* Sticky CTA */}
       <div className="detail-cta">
-        <div className="detail-cta-price">
-          <strong>{esPista ? "24 €" : "7,50 €"}</strong>
-          <small>{esPista ? "por pista" : "por persona"}</small>
-        </div>
         <button className="detail-cta-btn">
-          {esPista ? "Reservar ahora" : "Apuntarme ahora"} →
+          {esPista ? "Reservar en el club →" : "Apuntarme ahora →"}
         </button>
       </div>
     </div>

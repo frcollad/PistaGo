@@ -17,8 +17,8 @@ function ResultCard({ pista, onShowDetail }) {
   };
 
   return (
-    <article className="result-card">
-      <ClubImage club={pista.club} size={46} />
+    <article className={`result-card result-card--${pista.color}`}>
+      <ClubImage club={pista.club} size={44} />
 
       <div className="rc-content">
         <div className="rc-header">
@@ -27,7 +27,7 @@ function ResultCard({ pista, onShowDetail }) {
         </div>
 
         <h3 className="rc-club">{pista.club}</h3>
-        <p className="rc-loc">📍 {pista.city}</p>
+        <p className="rc-loc">{pista.city}</p>
 
         {(pista.nivel || pista.plazasLibres != null) && (
           <p className="rc-meta">
@@ -40,12 +40,12 @@ function ResultCard({ pista, onShowDetail }) {
         )}
 
         <div className="rc-footer">
-          <span className="rc-platform">⊞ TPC Matchpoint</span>
+          <span className="rc-date">{pista.date}</span>
           <button
             className={`rc-btn rc-btn--${pista.color}`}
             onClick={() => onShowDetail(detail)}
           >
-            {pista.button}
+            Ver detalles →
           </button>
         </div>
       </div>
