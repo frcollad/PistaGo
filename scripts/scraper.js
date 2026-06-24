@@ -143,9 +143,10 @@ async function scrapeClub(club) {
           const end = parseMsDate(ocupacion.HoraFin);
           if (!start || !end || start < ahora) continue;
 
-          // Log raw fields to discover puesto (derecha/revés/indiferente)
-          const rawKeys = Object.keys(ocupacion).filter(k => k.startsWith("Texto") || k.toLowerCase().includes("puesto") || k.toLowerCase().includes("lado") || k.toLowerCase().includes("posicion"));
-          if (rawKeys.length > 2) console.log(`  [partida raw] ${rawKeys.map(k => `${k}=${ocupacion[k]}`).join(", ")}`);
+          // Log full partida object once to discover all available fields
+          if (pistas.filter(p => p.tipo === "partida_abierta").length === 0) {
+            console.log(`  [partida raw] ${JSON.stringify(ocupacion)}`);
+          }
 
           pistas.push({
             id: `${club.id}-partida-${columna.Id}-${start}`,
