@@ -78,12 +78,14 @@ async function postJson(baseUrl, endpoint, body, sessionCookie) {
 }
 
 function parsePuestoFromLabels(labels) {
-  const libres = labels.filter(l => l === "Libre");
-  if (libres.length === 0) return null;
-  const posOcupadas = labels
-    .filter(l => l !== "Libre" && l !== "Reservado")
+  const libres = labels.filter(l => l === "Libre").length;
+  const ocupadas = labels.filter(l => l !== "Libre" && l !== "Reservado");
+  // Si no hay ningún libre explícito pero tampoco 4 ocupados, inferimos que hay libres
+  const totalLibres = libres > 0 ? libres : Math.max(0, 4 - labels.length);
+  if (totalLibres === 0) return null;
+  const posOcupadas = ocupadas
     .map(l => l.match(/\((Der|Rev|Ind)\)/)?.[1]).filter(Boolean);
-  if (libres.length >= 2) return "Indiferente";
+  if (totalLibres >= 2) return "Indiferente";
   const hayDer = posOcupadas.includes("Der");
   const hayRev = posOcupadas.includes("Rev");
   if (hayDer && !hayRev) return "Revés";
@@ -111,7 +113,7 @@ async function getMatchesPuestos(baseUrl, sessionCookie, fechas) {
       for (const m of h.matchAll(reIdR)) {
         const idRecurso = m[1];
         const hora = m[2];
-        const labels = [...h.slice(m.index, m.index + 6000).matchAll(/LabelTexto[^>]*>([^<]+)</g)]
+        const labels = [...h.slice(m.index, m.index + 12000).matchAll(/LabelTexto[^>]*>([^<]+)</g)]
           .slice(0, 4).map(l => l[1].trim());
         const puesto = parsePuestoFromLabels(labels);
         if (puesto) puestoMap[`${idRecurso}|${fechaKey}|${hora}`] = puesto;
@@ -122,7 +124,7 @@ async function getMatchesPuestos(baseUrl, sessionCookie, fechas) {
       for (const m of h.matchAll(reGuid)) {
         const pistaNombre = m[1];
         const hora = m[2];
-        const labels = [...h.slice(m.index, m.index + 6000).matchAll(/LabelTexto[^>]*>([^<]+)</g)]
+        const labels = [...h.slice(m.index, m.index + 12000).matchAll(/LabelTexto[^>]*>([^<]+)</g)]
           .slice(0, 4).map(l => l[1].trim());
         const puesto = parsePuestoFromLabels(labels);
         if (puesto) puestoMap[`${pistaNombre}|${fechaKey}|${hora}`] = puesto;
@@ -221,11 +223,15 @@ async function scrapeClub(club) {
             horaFin: end,
             nivel: ocupacion.Texto2 || null,
             plazasLibres: ocupacion.Texto1 ? parseInt(ocupacion.Texto1) : null,
-            puesto: (
-              puestoMap[`${columna.Id}|${formatFecha(fecha)}|${ocupacion.StrHoraInicio}`] ||
-              puestoMap[`${columna.TextoPrincipal}|${formatFecha(fecha)}|${ocupacion.StrHoraInicio}`] ||
-              null
-            ),
+            puesto: (() => {
+              const h = ocupacion.StrHoraInicio.replace(/^0/, "");
+              const f = formatFecha(fecha);
+              return (
+                puestoMap[`${columna.Id}|${f}|${h}`] ||
+                puestoMap[`${columna.TextoPrincipal}|${f}|${h}`] ||
+                null
+              );
+            })(),
           });
         }
       }

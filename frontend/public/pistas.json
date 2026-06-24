@@ -1,142 +1,6 @@
 {
-  "updatedAt": 1782296014563,
+  "updatedAt": 1782297415326,
   "pistas": [
-    {
-      "id": "interclubmeliana-13-1782296100000",
-      "clubId": "interclubmeliana",
-      "club": "Interclub Meliana",
-      "ciudad": "Meliana",
-      "lat": 39.5373,
-      "lng": -0.3414,
-      "pista": "Pista 1",
-      "tipo": "pista_libre",
-      "fecha": "24/6/2026",
-      "strHoraInicio": "12:15",
-      "strHoraFin": "13:45",
-      "horaInicio": 1782296100000,
-      "horaFin": 1782301500000,
-      "nivel": null,
-      "plazasLibres": null
-    },
-    {
-      "id": "interclubmeliana-14-1782296100000",
-      "clubId": "interclubmeliana",
-      "club": "Interclub Meliana",
-      "ciudad": "Meliana",
-      "lat": 39.5373,
-      "lng": -0.3414,
-      "pista": "Pista 2",
-      "tipo": "pista_libre",
-      "fecha": "24/6/2026",
-      "strHoraInicio": "12:15",
-      "strHoraFin": "13:45",
-      "horaInicio": 1782296100000,
-      "horaFin": 1782301500000,
-      "nivel": null,
-      "plazasLibres": null
-    },
-    {
-      "id": "interclubmeliana-15-1782296100000",
-      "clubId": "interclubmeliana",
-      "club": "Interclub Meliana",
-      "ciudad": "Meliana",
-      "lat": 39.5373,
-      "lng": -0.3414,
-      "pista": "Pista 3",
-      "tipo": "pista_libre",
-      "fecha": "24/6/2026",
-      "strHoraInicio": "12:15",
-      "strHoraFin": "13:45",
-      "horaInicio": 1782296100000,
-      "horaFin": 1782301500000,
-      "nivel": null,
-      "plazasLibres": null
-    },
-    {
-      "id": "lapoblaindoor-14-1782297000000",
-      "clubId": "lapoblaindoor",
-      "club": "La Pobla Indoor",
-      "ciudad": "La Puebla de Farnals",
-      "lat": 39.583,
-      "lng": -0.283,
-      "pista": "Pista 2",
-      "tipo": "pista_libre",
-      "fecha": "24/6/2026",
-      "strHoraInicio": "12:30",
-      "strHoraFin": "14:00",
-      "horaInicio": 1782297000000,
-      "horaFin": 1782302400000,
-      "nivel": null,
-      "plazasLibres": null
-    },
-    {
-      "id": "lapoblaindoor-15-1782297000000",
-      "clubId": "lapoblaindoor",
-      "club": "La Pobla Indoor",
-      "ciudad": "La Puebla de Farnals",
-      "lat": 39.583,
-      "lng": -0.283,
-      "pista": "Pista 3",
-      "tipo": "pista_libre",
-      "fecha": "24/6/2026",
-      "strHoraInicio": "12:30",
-      "strHoraFin": "14:00",
-      "horaInicio": 1782297000000,
-      "horaFin": 1782302400000,
-      "nivel": null,
-      "plazasLibres": null
-    },
-    {
-      "id": "interclubmeliana-16-1782297000000",
-      "clubId": "interclubmeliana",
-      "club": "Interclub Meliana",
-      "ciudad": "Meliana",
-      "lat": 39.5373,
-      "lng": -0.3414,
-      "pista": "Pista 4",
-      "tipo": "pista_libre",
-      "fecha": "24/6/2026",
-      "strHoraInicio": "12:30",
-      "strHoraFin": "14:00",
-      "horaInicio": 1782297000000,
-      "horaFin": 1782302400000,
-      "nivel": null,
-      "plazasLibres": null
-    },
-    {
-      "id": "interclubmeliana-17-1782297000000",
-      "clubId": "interclubmeliana",
-      "club": "Interclub Meliana",
-      "ciudad": "Meliana",
-      "lat": 39.5373,
-      "lng": -0.3414,
-      "pista": "Pista 5",
-      "tipo": "pista_libre",
-      "fecha": "24/6/2026",
-      "strHoraInicio": "12:30",
-      "strHoraFin": "14:00",
-      "horaInicio": 1782297000000,
-      "horaFin": 1782302400000,
-      "nivel": null,
-      "plazasLibres": null
-    },
-    {
-      "id": "interclubmeliana-18-1782297000000",
-      "clubId": "interclubmeliana",
-      "club": "Interclub Meliana",
-      "ciudad": "Meliana",
-      "lat": 39.5373,
-      "lng": -0.3414,
-      "pista": "Pista 6",
-      "tipo": "pista_libre",
-      "fecha": "24/6/2026",
-      "strHoraInicio": "12:30",
-      "strHoraFin": "14:00",
-      "horaInicio": 1782297000000,
-      "horaFin": 1782302400000,
-      "nivel": null,
-      "plazasLibres": null
-    },
     {
       "id": "lapoblaindoor-partida-13-1782298800000",
       "clubId": "lapoblaindoor",
@@ -153,7 +17,7 @@
       "horaFin": 1782304200000,
       "nivel": "Mixto 3,25 - 3,75",
       "plazasLibres": 3,
-      "puesto": "Indiferente"
+      "puesto": null
     },
     {
       "id": "lapoblaindoor-16-1782298800000",
@@ -207,38 +71,40 @@
       "plazasLibres": null
     },
     {
-      "id": "interclubmeliana-16-1782312300000",
+      "id": "interclubmeliana-partida-16-1782312300000",
       "clubId": "interclubmeliana",
       "club": "Interclub Meliana",
       "ciudad": "Meliana",
       "lat": 39.5373,
       "lng": -0.3414,
       "pista": "Pista 4",
-      "tipo": "pista_libre",
+      "tipo": "partida_abierta",
       "fecha": "24/6/2026",
       "strHoraInicio": "16:45",
       "strHoraFin": "18:15",
       "horaInicio": 1782312300000,
       "horaFin": 1782317700000,
-      "nivel": null,
-      "plazasLibres": null
+      "nivel": "Mixto 3,75 - 4,25",
+      "plazasLibres": 3,
+      "puesto": "Indiferente"
     },
     {
-      "id": "bonpadel-14-1782313200000",
+      "id": "bonpadel-partida-14-1782313200000",
       "clubId": "bonpadel",
       "club": "Bonpadel",
       "ciudad": "Bonrepòs i Mirambell",
       "lat": 39.5282,
       "lng": -0.366,
       "pista": "Pista 2",
-      "tipo": "pista_libre",
+      "tipo": "partida_abierta",
       "fecha": "24/6/2026",
       "strHoraInicio": "17:00",
       "strHoraFin": "18:30",
       "horaInicio": 1782313200000,
       "horaFin": 1782318600000,
-      "nivel": null,
-      "plazasLibres": null
+      "nivel": "Mixto 2,75 - 3,25",
+      "plazasLibres": 3,
+      "puesto": "Indiferente"
     },
     {
       "id": "bonpadel-16-1782313200000",
@@ -479,7 +345,7 @@
       "horaFin": 1782372600000,
       "nivel": "Mixto 2,75 - 3,25",
       "plazasLibres": 1,
-      "puesto": null
+      "puesto": "Derecha"
     },
     {
       "id": "bonpadel-13-1782367200000",
@@ -548,7 +414,7 @@
       "horaFin": 1782378000000,
       "nivel": "Mixto 3,00 - 3,50",
       "plazasLibres": 2,
-      "puesto": null
+      "puesto": "Indiferente"
     },
     {
       "id": "lapoblaindoor-partida-16-1782372600000",
@@ -566,7 +432,7 @@
       "horaFin": 1782378000000,
       "nivel": "Mixto 3,75 - 4,25",
       "plazasLibres": 2,
-      "puesto": null
+      "puesto": "Indiferente"
     },
     {
       "id": "interclubmeliana-partida-18-1782372600000",
@@ -584,7 +450,7 @@
       "horaFin": 1782378000000,
       "nivel": "Mixto 2,50 - 3,00",
       "plazasLibres": 1,
-      "puesto": null
+      "puesto": "Revés"
     },
     {
       "id": "lapoblaindoor-partida-13-1782374400000",
@@ -602,7 +468,7 @@
       "horaFin": 1782379800000,
       "nivel": "Mixto 3,00 - 3,25",
       "plazasLibres": 1,
-      "puesto": null
+      "puesto": "Indiferente"
     },
     {
       "id": "bonpadel-16-1782376200000",
@@ -671,7 +537,7 @@
       "horaFin": 1782382500000,
       "nivel": "Mixto 2,50 - 3,00",
       "plazasLibres": 1,
-      "puesto": null
+      "puesto": "Revés"
     },
     {
       "id": "lapoblaindoor-partida-14-1782378000000",
@@ -1803,7 +1669,7 @@
       "horaFin": 1782462600000,
       "nivel": "Mixto 3,00 - 3,25",
       "plazasLibres": 2,
-      "puesto": null
+      "puesto": "Indiferente"
     },
     {
       "id": "interclubmeliana-partida-14-1782457200000",
@@ -1821,7 +1687,7 @@
       "horaFin": 1782462600000,
       "nivel": "Mixto 3,25 - 3,75",
       "plazasLibres": 3,
-      "puesto": null
+      "puesto": "Indiferente"
     },
     {
       "id": "lapoblaindoor-partida-14-1782459000000",
@@ -1839,7 +1705,7 @@
       "horaFin": 1782464400000,
       "nivel": "Mixto 3,75 - 4,25",
       "plazasLibres": 3,
-      "puesto": null
+      "puesto": "Indiferente"
     },
     {
       "id": "lapoblaindoor-partida-15-1782459000000",
@@ -1857,7 +1723,7 @@
       "horaFin": 1782464400000,
       "nivel": "Mixto 4,00 - 4,25",
       "plazasLibres": 1,
-      "puesto": null
+      "puesto": "Indiferente"
     },
     {
       "id": "interclubmeliana-partida-17-1782459000000",
@@ -1875,7 +1741,7 @@
       "horaFin": 1782464400000,
       "nivel": "Mixto 2,25 - 2,75",
       "plazasLibres": 1,
-      "puesto": null
+      "puesto": "Revés"
     },
     {
       "id": "interclubmeliana-partida-18-1782459000000",
@@ -1893,7 +1759,7 @@
       "horaFin": 1782464400000,
       "nivel": "Mixto 3,50 - 4,00",
       "plazasLibres": 3,
-      "puesto": null
+      "puesto": "Indiferente"
     },
     {
       "id": "lapoblaindoor-partida-13-1782460800000",
@@ -1946,7 +1812,7 @@
       "horaFin": 1782468000000,
       "nivel": "Mixto 3,25 - 3,75",
       "plazasLibres": 2,
-      "puesto": "Revés"
+      "puesto": "Indiferente"
     },
     {
       "id": "interclubmeliana-partida-14-1782462600000",
@@ -1982,7 +1848,7 @@
       "horaFin": 1782468900000,
       "nivel": "Mixto 3,00 - 3,50",
       "plazasLibres": 1,
-      "puesto": null
+      "puesto": "Revés"
     },
     {
       "id": "lapoblaindoor-partida-14-1782464400000",
@@ -2053,7 +1919,7 @@
       "horaFin": 1782469800000,
       "nivel": "Mixto 3,25 - 3,75",
       "plazasLibres": 1,
-      "puesto": null
+      "puesto": "Indiferente"
     },
     {
       "id": "lapoblaindoor-partida-13-1782466200000",
@@ -2637,7 +2503,7 @@
       "horaFin": 1782487800000,
       "nivel": "Mixto 3,75 - 4,25",
       "plazasLibres": 2,
-      "puesto": "Derecha"
+      "puesto": "Indiferente"
     },
     {
       "id": "lapoblaindoor-16-1782482400000",
@@ -2792,7 +2658,7 @@
       "horaFin": 1782491400000,
       "nivel": "Masculino 3,50 - 4,00",
       "plazasLibres": 2,
-      "puesto": "Derecha"
+      "puesto": "Indiferente"
     },
     {
       "id": "interclubmeliana-18-1782486000000",
@@ -2881,7 +2747,7 @@
       "horaFin": 1782496800000,
       "nivel": "Mixto 3,50 - 4,00",
       "plazasLibres": 2,
-      "puesto": "Derecha"
+      "puesto": "Indiferente"
     },
     {
       "id": "bonpadel-19-1782493200000",
