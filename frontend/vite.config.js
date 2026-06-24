@@ -7,6 +7,18 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: /\/pistas\.json$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'pistas-data',
+              expiration: { maxAgeSeconds: 3600 },
+            },
+          },
+        ],
+      },
       manifest: {
         name: 'PistaGo',
         short_name: 'PistaGo',
