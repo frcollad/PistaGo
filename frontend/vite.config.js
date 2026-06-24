@@ -7,16 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      workbox: {
-        globIgnores: ['**/pistas.json'],
-        cacheId: 'pistago-v2',
-        runtimeCaching: [
-          {
-            urlPattern: /\/pistas\.json$/,
-            handler: 'NetworkOnly',
-          },
-        ],
-      },
+      selfDestroying: true,
       manifest: {
         name: 'PistaGo',
         short_name: 'PistaGo',
