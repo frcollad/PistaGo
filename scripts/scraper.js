@@ -143,9 +143,14 @@ async function scrapeClub(club) {
           const end = parseMsDate(ocupacion.HoraFin);
           if (!start || !end || start < ahora) continue;
 
-          // Log full partida object once to discover all available fields
+          // Log all fields of first partida to discover puesto field
           if (pistas.filter(p => p.tipo === "partida_abierta").length === 0) {
-            console.log(`  [partida raw] ${JSON.stringify(ocupacion)}`);
+            console.log("  [partida keys] " + Object.keys(ocupacion).join(", "));
+            Object.entries(ocupacion).forEach(([k, v]) => {
+              if (v !== null && v !== undefined && v !== "" && typeof v !== "object") {
+                console.log(`  [partida field] ${k} = ${v}`);
+              }
+            });
           }
 
           pistas.push({
