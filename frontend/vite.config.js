@@ -8,14 +8,12 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
+        globIgnores: ['**/pistas.json'],
+        cacheId: 'pistago-v2',
         runtimeCaching: [
           {
             urlPattern: /\/pistas\.json$/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'pistas-data',
-              expiration: { maxAgeSeconds: 3600 },
-            },
+            handler: 'NetworkOnly',
           },
         ],
       },
