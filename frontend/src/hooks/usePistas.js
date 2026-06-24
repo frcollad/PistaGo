@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import pistasData from "../data/pistas.json";
 
 const DIAS_ES = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 const MESES_ES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -46,24 +46,10 @@ function pistaToAlert(pista) {
 }
 
 export function usePistas() {
-  const [alerts, setAlerts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [updatedAt, setUpdatedAt] = useState(null);
-
-  useEffect(() => {
-    fetch(`/pistas.json?t=${Date.now()}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setAlerts((data.pistas || []).map(pistaToAlert));
-        setUpdatedAt(data.updatedAt);
-        setLoading(false);
-      })
-      .catch((e) => {
-        setError(e.message);
-        setLoading(false);
-      });
-  }, []);
-
-  return { alerts, loading, error, updatedAt };
+  return {
+    alerts: (pistasData.pistas || []).map(pistaToAlert),
+    loading: false,
+    error: null,
+    updatedAt: pistasData.updatedAt,
+  };
 }
