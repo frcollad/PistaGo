@@ -52,7 +52,7 @@ export function usePistas() {
   const [updatedAt, setUpdatedAt] = useState(null);
 
   useEffect(() => {
-    fetch("/pistas.json")
+    fetch(`/pistas.json?t=${Date.now()}`)
       .then((r) => r.json())
       .then((data) => {
         setAlerts((data.pistas || []).map(pistaToAlert));
