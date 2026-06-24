@@ -110,7 +110,7 @@ async function getMatchesPuestos(baseUrl, sessionCookie, fechas) {
       const reIdR = /HyperLinkHorario[^"]*" href="[^"]*idRecurso=(\d+)[^"]*fecha=\d{2}-\d{2}-\d{4}[^"]*horainicio=(\d{1,2}:\d{2})/g;
       for (const m of h.matchAll(reIdR)) {
         const idRecurso = m[1];
-        const hora = m[2].padStart(5, "0");
+        const hora = m[2];
         const labels = [...h.slice(m.index, m.index + 6000).matchAll(/LabelTexto[^>]*>([^<]+)</g)]
           .slice(0, 4).map(l => l[1].trim());
         const puesto = parsePuestoFromLabels(labels);
@@ -118,11 +118,10 @@ async function getMatchesPuestos(baseUrl, sessionCookie, fechas) {
       }
 
       // Patrón 2: URL con GUID (partidas con jugadores ya inscritos)
-      // Extraer "Pista N HH:MM" del texto del link
       const reGuid = /HyperLinkHorario[^"]*" href="[^"]*id=[a-f0-9]{32}">(Pista \d+) (\d{1,2}:\d{2})<\/a>/g;
       for (const m of h.matchAll(reGuid)) {
-        const pistaNombre = m[1]; // "Pista 1"
-        const hora = m[2].padStart(5, "0");
+        const pistaNombre = m[1];
+        const hora = m[2];
         const labels = [...h.slice(m.index, m.index + 6000).matchAll(/LabelTexto[^>]*>([^<]+)</g)]
           .slice(0, 4).map(l => l[1].trim());
         const puesto = parsePuestoFromLabels(labels);
