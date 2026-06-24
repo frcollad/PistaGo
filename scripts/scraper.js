@@ -249,7 +249,11 @@ async function main() {
     console.log(`\n${club.nombre}...`);
     const pistas = await scrapeClub(club);
     todas.push(...pistas);
-    console.log(`  ${pistas.length} slots encontrados`);
+    const partidas = pistas.filter(p => p.tipo === 'partida_abierta');
+    const conPuesto = partidas.filter(p => p.puesto);
+    const sinPuesto = partidas.filter(p => !p.puesto);
+    console.log(`  ${pistas.length} slots (${partidas.length} partidas: ${conPuesto.length} con puesto, ${sinPuesto.length} sin puesto)`);
+    sinPuesto.forEach(p => console.log(`    SIN PUESTO: ${p.pista} ${p.strHoraInicio} plazas:${p.plazasLibres}`));
   }
 
   todas.sort((a, b) => a.horaInicio - b.horaInicio);
