@@ -77,12 +77,74 @@ async function postJson(baseUrl, endpoint, body, sessionCookie) {
   return res.json();
 }
 
+function parsePuestoFromLabels(labels) {
+  const libres = labels.filter(l => l === "Libre");
+  if (libres.length === 0) return null;
+  const posOcupadas = labels
+    .filter(l => l !== "Libre" && l !== "Reservado")
+    .map(l => l.match(/\((Der|Rev|Ind)\)/)?.[1]).filter(Boolean);
+  if (libres.length >= 2) return "Indiferente";
+  const hayDer = posOcupadas.includes("Der");
+  const hayRev = posOcupadas.includes("Rev");
+  if (hayDer && !hayRev) return "Revés";
+  if (hayRev && !hayDer) return "Derecha";
+  return "Indiferente";
+}
+
+async function getMatchesPuestos(baseUrl, sessionCookie, fechas) {
+  const puestoMap = {};
+  for (const fecha of fechas) {
+    const dd = String(fecha.getDate()).padStart(2, "0");
+    const mm = String(fecha.getMonth() + 1).padStart(2, "0");
+    const yyyy = fecha.getFullYear();
+    const fechaParam = `${dd}-${mm}-${yyyy}`;
+    const fechaKey = `${parseInt(dd)}/${parseInt(mm)}/${yyyy}`;
+    try {
+      const res = await fetch(`${baseUrl}/Matches/Grid.aspx?fecha=${fechaParam}`, {
+        headers: { "User-Agent": UA, "Cookie": sessionCookie },
+      });
+      const raw = await res.text();
+      const h = raw.replace(/&amp;/g, "&");
+
+      // Patrón 1: URL con idRecurso (partidas nuevas/vacías)
+      const reIdR = /HyperLinkHorario[^"]*" href="[^"]*idRecurso=(\d+)[^"]*fecha=\d{2}-\d{2}-\d{4}[^"]*horainicio=(\d{1,2}:\d{2})/g;
+      for (const m of h.matchAll(reIdR)) {
+        const idRecurso = m[1];
+        const hora = m[2].padStart(5, "0");
+        const labels = [...h.slice(m.index, m.index + 6000).matchAll(/LabelTexto[^>]*>([^<]+)</g)]
+          .slice(0, 4).map(l => l[1].trim());
+        const puesto = parsePuestoFromLabels(labels);
+        if (puesto) puestoMap[`${idRecurso}|${fechaKey}|${hora}`] = puesto;
+      }
+
+      // Patrón 2: URL con GUID (partidas con jugadores ya inscritos)
+      // Extraer "Pista N HH:MM" del texto del link
+      const reGuid = /HyperLinkHorario[^"]*" href="[^"]*id=[a-f0-9]{32}">(Pista \d+) (\d{1,2}:\d{2})<\/a>/g;
+      for (const m of h.matchAll(reGuid)) {
+        const pistaNombre = m[1]; // "Pista 1"
+        const hora = m[2].padStart(5, "0");
+        const labels = [...h.slice(m.index, m.index + 6000).matchAll(/LabelTexto[^>]*>([^<]+)</g)]
+          .slice(0, 4).map(l => l[1].trim());
+        const puesto = parsePuestoFromLabels(labels);
+        if (puesto) puestoMap[`${pistaNombre}|${fechaKey}|${hora}`] = puesto;
+      }
+    } catch (e) {
+      console.error(`  Error puestos ${fechaParam}:`, e.message);
+    }
+  }
+  return puestoMap;
+}
+
 async function scrapeClub(club) {
   const ahora = Date.now();
   const pistas = [];
 
   const { sessionCookie, key } = await getSession(club.baseUrl);
   console.log(`  Session ok, key: ${key.substring(0, 20)}...`);
+
+  const fechas = getFechas();
+  const puestoMap = await getMatchesPuestos(club.baseUrl, sessionCookie, fechas);
+  console.log(`  puestoMap: ${Object.keys(puestoMap).length} entradas`);
 
   for (const idCuadro of club.cuadros) {
     for (const fecha of getFechas()) {
@@ -160,7 +222,11 @@ async function scrapeClub(club) {
             horaFin: end,
             nivel: ocupacion.Texto2 || null,
             plazasLibres: ocupacion.Texto1 ? parseInt(ocupacion.Texto1) : null,
-            puesto: ocupacion.Texto3 || ocupacion.Puesto || ocupacion.Posicion || ocupacion.Lado || null,
+            puesto: (
+              puestoMap[`${columna.Id}|${formatFecha(fecha)}|${ocupacion.StrHoraInicio}`] ||
+              puestoMap[`${columna.TextoPrincipal}|${formatFecha(fecha)}|${ocupacion.StrHoraInicio}`] ||
+              null
+            ),
           });
         }
       }
