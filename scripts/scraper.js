@@ -258,9 +258,9 @@ async function main() {
 
   todas.sort((a, b) => a.horaInicio - b.horaInicio);
 
-  const out = path.join(__dirname, "../frontend/src/data/pistas.json");
+  const out = path.join(__dirname, "../frontend/public/pistas.json");
   fs.writeFileSync(out, JSON.stringify({ updatedAt: Date.now(), pistas: todas }, null, 2));
-  console.log(`\n✓ ${todas.length} slots guardados en frontend/src/data/pistas.json`);
+  console.log(`\n✓ ${todas.length} slots guardados en frontend/public/pistas.json`);
 }
 
 main().catch(console.error);
