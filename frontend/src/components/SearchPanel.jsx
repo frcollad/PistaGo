@@ -70,7 +70,14 @@ function DayStrip({ fecha, onFecha }) {
   );
 }
 
-function SearchPanel({ fecha, onFecha, franja, onFranja, nivel, onNivel, niveles, mostrarNivel }) {
+const PUESTO_OPTS = [
+  { value: "all",        label: "Cualquier posición" },
+  { value: "Derecha",    label: "Derecha" },
+  { value: "Revés",      label: "Revés" },
+  { value: "Indiferente",label: "Indiferente" },
+];
+
+function SearchPanel({ fecha, onFecha, franja, onFranja, nivel, onNivel, niveles, mostrarNivel, puesto, onPuesto }) {
   const franjaOpts = [
     { value: "all",    label: "Cualquier hora" },
     { value: "manana", label: "Mañana" },
@@ -96,6 +103,14 @@ function SearchPanel({ fecha, onFecha, franja, onFranja, nivel, onNivel, niveles
           <ChipRow options={franjaOpts} value={franja} onChange={onFranja} />
         </div>
       </div>
+      {mostrarNivel && (
+        <div className="sp-row">
+          <div className="sp-group">
+            <small className="sp-label">Puesto</small>
+            <ChipRow options={PUESTO_OPTS} value={puesto} onChange={onPuesto} />
+          </div>
+        </div>
+      )}
       {mostrarNivel && niveles.length > 0 && (
         <div className="sp-row">
           <div className="sp-group">

@@ -1,7 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="100" fill="#061321"/>
-  <rect x="76" y="156" width="360" height="200" rx="8" fill="none" stroke="#d9f99d" stroke-width="14"/>
-  <line x1="256" y1="156" x2="256" y2="356" stroke="#d9f99d" stroke-width="10"/>
-  <line x1="76" y1="256" x2="436" y2="256" stroke="#d9f99d" stroke-width="8"/>
-  <circle cx="334" cy="206" r="34" fill="#16c47f"/>
+  <defs>
+    <radialGradient id="ball" cx="38%" cy="32%" r="68%">
+      <stop offset="0%" stop-color="#ecfccb"/>
+      <stop offset="45%" stop-color="#a3e635"/>
+      <stop offset="100%" stop-color="#3f6212"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="110" fill="#061321"/>
+  <circle cx="258" cy="268" r="196" fill="rgba(163,230,53,0.1)"/>
+  <circle cx="256" cy="256" r="178" fill="url(#ball)" filter="url(#glow)"/>
+  <path d="M 188,86 C 62,172 62,340 188,426" fill="none" stroke="white" stroke-width="14" stroke-linecap="round" opacity="0.85"/>
+  <path d="M 324,86 C 450,172 450,340 324,426" fill="none" stroke="white" stroke-width="14" stroke-linecap="round" opacity="0.85"/>
 </svg>

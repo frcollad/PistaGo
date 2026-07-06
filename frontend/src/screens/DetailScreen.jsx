@@ -9,32 +9,27 @@ function CourtSVG({ puesto, club }) {
   return (
     <svg viewBox="0 0 360 160" xmlns="http://www.w3.org/2000/svg" className="dci-svg">
       <rect width="360" height="160" fill="#0a1628"/>
-      {/* fondo lateral izquierdo */}
       {highlightLeft  && <rect x="40"  y="20" width="140" height="120" rx="4" fill={hl}/>}
-      {/* fondo lateral derecho */}
       {highlightRight && <rect x="180" y="20" width="140" height="120" rx="4" fill={hl}/>}
-      {/* pista exterior */}
       <rect x="40" y="20" width="280" height="120" rx="4" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
-      {/* línea central vertical */}
       <line x1="180" y1="20" x2="180" y2="140" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
-      {/* caja de saque */}
       <rect x="40" y="45" width="280" height="70" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="1"/>
-      {/* red */}
       <line x1="40" y1="80" x2="320" y2="80" stroke="rgba(255,255,255,0.6)" strokeWidth="2.5"/>
-      {/* T central */}
       <line x1="180" y1="45" x2="180" y2="115" stroke="rgba(255,255,255,0.18)" strokeWidth="1"/>
-      {/* etiquetas de lado */}
+      {/* etiqueta fija REVÉS (izquierda) */}
+      <text x="110" y="37" textAnchor="middle"
+        fill={highlightLeft ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.2)"}
+        fontSize="9" fontWeight="700" fontFamily="system-ui" letterSpacing="1">REVÉS</text>
       {highlightLeft && (
-        <text x="110" y="84" textAnchor="middle" fill="rgba(255,255,255,0.9)" fontSize="11" fontWeight="700" fontFamily="system-ui">
-          {p.includes("rev") ? "REVÉS" : "LIBRE"}
-        </text>
+        <text x="110" y="90" textAnchor="middle" fill="rgba(34,197,94,0.95)" fontSize="12" fontWeight="800" fontFamily="system-ui">LIBRE</text>
       )}
+      {/* etiqueta fija DERECHA (derecha) */}
+      <text x="250" y="37" textAnchor="middle"
+        fill={highlightRight ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.2)"}
+        fontSize="9" fontWeight="700" fontFamily="system-ui" letterSpacing="1">DERECHA</text>
       {highlightRight && (
-        <text x="250" y="84" textAnchor="middle" fill="rgba(255,255,255,0.9)" fontSize="11" fontWeight="700" fontFamily="system-ui">
-          {p.includes("derecha") ? "DERECHA" : "LIBRE"}
-        </text>
+        <text x="250" y="90" textAnchor="middle" fill="rgba(34,197,94,0.95)" fontSize="12" fontWeight="800" fontFamily="system-ui">LIBRE</text>
       )}
-      {/* nombre club */}
       <text x="180" y="154" textAnchor="middle" fill="rgba(255,255,255,0.25)" fontSize="9" fontFamily="system-ui">{club}</text>
     </svg>
   );

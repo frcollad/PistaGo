@@ -30,6 +30,7 @@ function SearchScreen({ onShowDetail }) {
   const [fecha, setFecha]     = useState("all");
   const [franja, setFranja]   = useState("all");
   const [nivel, setNivel]     = useState("all");
+  const [puesto, setPuesto]   = useState("all");
   const [panelOpen, setPanelOpen] = useState(false);
 
   const activeSummary = useMemo(() => {
@@ -37,8 +38,9 @@ function SearchScreen({ onShowDetail }) {
     if (fecha !== "all") parts.push(formatDateLabel(fecha));
     if (franja !== "all") parts.push(FRANJA_SHORT[franja]);
     if (nivel !== "all") parts.push(nivel);
+    if (puesto !== "all") parts.push(puesto);
     return parts;
-  }, [fecha, franja, nivel]);
+  }, [fecha, franja, nivel, puesto]);
 
   const hasFilters = activeSummary.length > 0;
 
@@ -62,9 +64,10 @@ function SearchScreen({ onShowDetail }) {
       }
       if (!horaEnFranja(p.strHoraInicio, franja)) return false;
       if (nivel !== "all" && p.nivel !== nivel) return false;
+      if (puesto !== "all" && tab === "partidas" && p.puesto !== puesto) return false;
       return true;
     });
-  }, [pistas, tab, fecha, franja, nivel]);
+  }, [pistas, tab, fecha, franja, nivel, puesto]);
 
   return (
     <>
@@ -110,9 +113,10 @@ function SearchScreen({ onShowDetail }) {
             nivel={nivel}   onNivel={setNivel}
             niveles={niveles}
             mostrarNivel={tab === "partidas"}
+            puesto={puesto} onPuesto={setPuesto}
           />
           <div className="filter-panel-footer">
-            <button className="fp-clear" onClick={(e) => { e.stopPropagation(); setFecha("all"); setFranja("all"); setNivel("all"); }}>
+            <button className="fp-clear" onClick={(e) => { e.stopPropagation(); setFecha("all"); setFranja("all"); setNivel("all"); setPuesto("all"); }}>
               Limpiar
             </button>
             <button className="fp-apply" onClick={(e) => { e.stopPropagation(); setPanelOpen(false); }}>
