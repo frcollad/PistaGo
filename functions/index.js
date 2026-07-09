@@ -2,6 +2,7 @@ const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { onRequest } = require("firebase-functions/v2/https");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, Timestamp } = require("firebase-admin/firestore");
+const nodeFetch = require("node-fetch");
 
 initializeApp();
 
@@ -202,3 +203,150 @@ exports.scrapePistas = onSchedule(
   { schedule: "every 30 minutes", region: "europe-west1", timeZone: "Europe/Madrid" },
   async () => { await runScraper(); }
 );
+
+// ── joinMatch ─────────────────────────────────────────────────────────────────
+
+function parseCookiesFromResponse(response) {
+  const setCookies = response.headers.raw()["set-cookie"] || [];
+  const map = {};
+  for (const c of setCookies) {
+    const [pair] = c.split(";");
+    const eq = pair.indexOf("=");
+    if (eq === -1) continue;
+    map[pair.slice(0, eq).trim()] = pair.slice(eq + 1);
+  }
+  return map;
+}
+
+function cookiesToHeader(cookieMap) {
+  return Object.entries(cookieMap)
+    .map(([k, v]) => `${k}=${v}`)
+    .join("; ");
+}
+
+function extractHiddenField(html, name) {
+  const escaped = name.replace(/\$/g, "\\$");
+  const re = new RegExp(`name="${escaped}"[^>]*value="([^"]*)"`, "i");
+  return (html.match(re) || [])[1] || "";
+}
+
+async function joinMatchFlow({ baseUrl, matchId, email, password, posicion, formaPago }) {
+  let cookies = {};
+
+  // Step 1: GET Login.aspx
+  const loginGetRes = await nodeFetch(`${baseUrl}/Login.aspx`, {
+    headers: { "User-Agent": UA },
+    redirect: "follow",
+  });
+  cookies = { ...cookies, ...parseCookiesFromResponse(loginGetRes) };
+  const loginHtml = await loginGetRes.text();
+
+  const vs1  = extractHiddenField(loginHtml, "__VIEWSTATE");
+  const vsg1 = extractHiddenField(loginHtml, "__VIEWSTATEGENERATOR");
+  const ev1  = extractHiddenField(loginHtml, "__EVENTVALIDATION");
+
+  if (!vs1) throw new Error("No se pudo leer Login.aspx (sin VIEWSTATE)");
+
+  // Step 2: POST Login.aspx
+  const loginParams = new URLSearchParams({
+    "__EVENTTARGET": "",
+    "__EVENTARGUMENT": "",
+    "__VIEWSTATE": vs1,
+    "__VIEWSTATEGENERATOR": vsg1,
+    "__EVENTVALIDATION": ev1,
+    "__tsFailed": "1",
+    "ctl00$ScriptManager1": "",
+    "ctl00$ContentPlaceHolderContenido$Login1$UserName": email,
+    "ctl00$ContentPlaceHolderContenido$Login1$Password": password,
+    "ctl00$ContentPlaceHolderContenido$Login1$LoginButton": "Entrar",
+  });
+
+  const loginPostRes = await nodeFetch(`${baseUrl}/Login.aspx`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Cookie": cookiesToHeader(cookies),
+      "User-Agent": UA,
+      "Referer": `${baseUrl}/Login.aspx`,
+    },
+    body: loginParams.toString(),
+    redirect: "manual",
+  });
+  cookies = { ...cookies, ...parseCookiesFromResponse(loginPostRes) };
+
+  const loginLocation = loginPostRes.headers.get("location") || "";
+  if (loginPostRes.status !== 302 || loginLocation.toLowerCase().includes("login")) {
+    const body = await loginPostRes.text();
+    const serverErr = (body.match(/FailureText[^>]*>([^<]+)</) || [])[1];
+    throw new Error(serverErr || "Credenciales incorrectas o Turnstile bloqueó el login");
+  }
+
+  // Step 3: GET Matches/Join.aspx?id={matchId}
+  const joinGetRes = await nodeFetch(`${baseUrl}/Matches/Join.aspx?id=${matchId}`, {
+    headers: { "Cookie": cookiesToHeader(cookies), "User-Agent": UA },
+    redirect: "follow",
+  });
+  cookies = { ...cookies, ...parseCookiesFromResponse(joinGetRes) };
+  const joinHtml = await joinGetRes.text();
+
+  if (joinGetRes.url.toLowerCase().includes("login")) {
+    throw new Error("Sesión caducada al cargar la partida");
+  }
+
+  const vs2  = extractHiddenField(joinHtml, "__VIEWSTATE");
+  const vsg2 = extractHiddenField(joinHtml, "__VIEWSTATEGENERATOR");
+  const ev2  = extractHiddenField(joinHtml, "__EVENTVALIDATION");
+
+  if (!vs2) throw new Error("No se pudo leer Join.aspx (sin VIEWSTATE)");
+
+  // Step 4: POST Join confirmation
+  const joinParams = new URLSearchParams({
+    "__EVENTTARGET": "ctl00$ContentPlaceHolderContenido$ButtonConfirmar",
+    "__EVENTARGUMENT": "",
+    "__VIEWSTATE": vs2,
+    "__VIEWSTATEGENERATOR": vsg2,
+    "__EVENTVALIDATION": ev2,
+    "ctl00$ContentPlaceHolderContenido$WUCInformacionPartidaConfirmacion$DropDownListPosicion": posicion || "4",
+    "ctl00$ContentPlaceHolderContenido$WUCInformacionPartidaConfirmacion$RadioButtonListFormaPago": formaPago || "pago_en_centro",
+  });
+
+  const joinPostRes = await nodeFetch(`${baseUrl}/Matches/Join.aspx?id=${matchId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Cookie": cookiesToHeader(cookies),
+      "User-Agent": UA,
+      "Referer": `${baseUrl}/Matches/Join.aspx?id=${matchId}`,
+    },
+    body: joinParams.toString(),
+    redirect: "manual",
+  });
+
+  if (joinPostRes.status !== 302) {
+    const errHtml = await joinPostRes.text();
+    const errMsg = (errHtml.match(/LabelMensaje[^>]*>([^<]+)</) || [])[1]
+      || (errHtml.match(/class="[^"]*error[^"]*"[^>]*>([^<]+)</) || [])[1]
+      || "No se pudo confirmar la inscripción";
+    throw new Error(errMsg);
+  }
+
+  return { ok: true, message: "¡Inscripción confirmada!" };
+}
+
+exports.joinMatch = onRequest({ region: "europe-west1", cors: true }, async (req, res) => {
+  if (req.method === "OPTIONS") return res.status(204).send("");
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+
+  const { baseUrl, matchId, email, password, posicion, formaPago } = req.body;
+  if (!baseUrl || !matchId || !email || !password) {
+    return res.status(400).json({ error: "Faltan parámetros: baseUrl, matchId, email, password" });
+  }
+
+  try {
+    const result = await joinMatchFlow({ baseUrl, matchId, email, password, posicion, formaPago });
+    res.json(result);
+  } catch (e) {
+    console.error("joinMatch error:", e.message);
+    res.status(400).json({ error: e.message });
+  }
+});

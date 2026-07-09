@@ -1,4 +1,7 @@
+import { useState, useEffect, useMemo } from "react";
 import ClubImage from "../components/ClubImage";
+
+const JOIN_MATCH_URL = "https://europe-west1-pistago-app.cloudfunctions.net/joinMatch";
 
 function CourtSVG({ puesto, club }) {
   const p = (puesto || "").toLowerCase();
@@ -16,14 +19,12 @@ function CourtSVG({ puesto, club }) {
       <rect x="40" y="45" width="280" height="70" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="1"/>
       <line x1="40" y1="80" x2="320" y2="80" stroke="rgba(255,255,255,0.6)" strokeWidth="2.5"/>
       <line x1="180" y1="45" x2="180" y2="115" stroke="rgba(255,255,255,0.18)" strokeWidth="1"/>
-      {/* etiqueta fija REVÉS (izquierda) */}
       <text x="110" y="37" textAnchor="middle"
         fill={highlightLeft ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.2)"}
         fontSize="9" fontWeight="700" fontFamily="system-ui" letterSpacing="1">REVÉS</text>
       {highlightLeft && (
         <text x="110" y="90" textAnchor="middle" fill="rgba(34,197,94,0.95)" fontSize="12" fontWeight="800" fontFamily="system-ui">LIBRE</text>
       )}
-      {/* etiqueta fija DERECHA (derecha) */}
       <text x="250" y="37" textAnchor="middle"
         fill={highlightRight ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.2)"}
         fontSize="9" fontWeight="700" fontFamily="system-ui" letterSpacing="1">DERECHA</text>
@@ -45,7 +46,7 @@ function InfoRow({ label, value }) {
   );
 }
 
-function DetailScreen({ selectedMatch, onBack }) {
+function DetailScreen({ selectedMatch, onBack, onGoToProfile }) {
   if (!selectedMatch) {
     return (
       <div className="empty-state">
@@ -58,6 +59,53 @@ function DetailScreen({ selectedMatch, onBack }) {
   }
 
   const esPista = selectedMatch.color === "blue";
+  const canAutoJoin = !esPista && !!selectedMatch.matchId;
+
+  const creds = useMemo(() => {
+    try { return JSON.parse(localStorage.getItem("mp_creds") || "null"); }
+    catch { return null; }
+  }, []);
+
+  const defaultPosicion = selectedMatch.puesto === "Derecha" ? "2"
+    : selectedMatch.puesto === "Revés" ? "3" : "4";
+
+  const [joinStep, setJoinStep] = useState("closed");
+  const [posicion, setPosicion] = useState(defaultPosicion);
+  const [pago, setPago] = useState("pago_en_centro");
+  const [joinError, setJoinError] = useState("");
+
+  useEffect(() => {
+    setPosicion(defaultPosicion);
+    setJoinStep("closed");
+  }, [selectedMatch]);
+
+  async function handleJoin() {
+    setJoinStep("loading");
+    try {
+      const res = await fetch(JOIN_MATCH_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          baseUrl: selectedMatch.baseUrl,
+          matchId: selectedMatch.matchId,
+          email: creds.email,
+          password: creds.password,
+          posicion,
+          formaPago: pago,
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setJoinStep("done");
+      } else {
+        setJoinError(data.error || "Error desconocido");
+        setJoinStep("error");
+      }
+    } catch (e) {
+      setJoinError("Error de red: " + e.message);
+      setJoinStep("error");
+    }
+  }
 
   return (
     <div className="detail-screen">
@@ -139,23 +187,87 @@ function DetailScreen({ selectedMatch, onBack }) {
           </div>
         </div>
 
-        {/* Redirect notice */}
-        <div className="detail-notice">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          <p>Al {esPista ? "reservar" : "apuntarte"} serás redirigido a la plataforma oficial para completar tu reserva.</p>
-        </div>
+        {!canAutoJoin && (
+          <div className="detail-notice">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <p>Al {esPista ? "reservar" : "apuntarte"} serás redirigido a la plataforma oficial para completar tu reserva.</p>
+          </div>
+        )}
 
-        {/* Spacer for sticky bottom */}
         <div style={{ height: 90 }} />
       </div>
 
       {/* Sticky CTA */}
       <div className="detail-cta">
-        <button className="detail-cta-btn">
-          {esPista ? "Reservar en el club →" : "Apuntarme ahora →"}
-        </button>
+        {canAutoJoin ? (
+          <>
+            {joinStep === "closed" && (
+              <button className="detail-cta-btn" onClick={() => setJoinStep("select")}>
+                Apuntarme ahora →
+              </button>
+            )}
+
+            {joinStep === "select" && (
+              <div className="join-form">
+                {!creds && (
+                  <p className="join-notice">
+                    Añade tu cuenta Matchpoint en{" "}
+                    <button className="join-link" onClick={onGoToProfile}>Perfil</button>
+                    {" "}para apuntarte automáticamente.
+                  </p>
+                )}
+                <div className="join-row">
+                  <small>Posición</small>
+                  <div className="join-chips">
+                    {[["2","Derecha"],["3","Revés"],["4","Indiferente"]].map(([v, l]) => (
+                      <button key={v} className={`join-chip${posicion === v ? " join-chip--on" : ""}`} onClick={() => setPosicion(v)}>{l}</button>
+                    ))}
+                  </div>
+                </div>
+                <div className="join-row">
+                  <small>Pago</small>
+                  <div className="join-chips">
+                    <button className={`join-chip${pago === "pago_en_centro" ? " join-chip--on" : ""}`} onClick={() => setPago("pago_en_centro")}>En centro</button>
+                    <button className={`join-chip${pago === "pago_con_saldo" ? " join-chip--on" : ""}`} onClick={() => setPago("pago_con_saldo")}>Con saldo</button>
+                  </div>
+                </div>
+                <div className="join-actions">
+                  <button className="join-cancel" onClick={() => setJoinStep("closed")}>Cancelar</button>
+                  <button className="detail-cta-btn join-confirm" onClick={handleJoin} disabled={!creds}>
+                    Confirmar →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {joinStep === "loading" && (
+              <div className="join-status">
+                <span className="join-spinner" />
+                <span>Inscribiendo en Matchpoint…</span>
+              </div>
+            )}
+
+            {joinStep === "done" && (
+              <div className="join-status join-status--ok">
+                <span>✓</span>
+                <span>¡Inscripción confirmada!</span>
+              </div>
+            )}
+
+            {joinStep === "error" && (
+              <div className="join-status join-status--err">
+                <p>{joinError}</p>
+                <button className="join-retry" onClick={() => setJoinStep("select")}>Reintentar</button>
+              </div>
+            )}
+          </>
+        ) : (
+          <button className="detail-cta-btn">
+            {esPista ? "Reservar en el club →" : "Apuntarme ahora →"}
+          </button>
+        )}
       </div>
     </div>
   );

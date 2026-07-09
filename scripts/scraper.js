@@ -116,18 +116,19 @@ async function getMatchesPuestos(baseUrl, sessionCookie, fechas) {
         const labels = [...h.slice(m.index, m.index + 12000).matchAll(/LabelTexto[^>]*>([^<]+)</g)]
           .slice(0, 4).map(l => l[1].trim());
         const puesto = parsePuestoFromLabels(labels);
-        if (puesto) puestoMap[`${idRecurso}|${fechaKey}|${hora}`] = puesto;
+        if (puesto) puestoMap[`${idRecurso}|${fechaKey}|${hora}`] = { puesto, matchId: null };
       }
 
       // Patrón 2: URL con GUID (partidas con jugadores ya inscritos)
-      const reGuid = /HyperLinkHorario[^"]*" href="[^"]*id=[a-f0-9]{32}">(Pista \d+) (\d{1,2}:\d{2})<\/a>/g;
+      const reGuid = /HyperLinkHorario[^"]*" href="[^"]*[?&]id=([a-f0-9]{32})">(Pista \d+) (\d{1,2}:\d{2})<\/a>/g;
       for (const m of h.matchAll(reGuid)) {
-        const pistaNombre = m[1];
-        const hora = m[2];
+        const matchId = m[1];
+        const pistaNombre = m[2];
+        const hora = m[3];
         const labels = [...h.slice(m.index, m.index + 12000).matchAll(/LabelTexto[^>]*>([^<]+)</g)]
           .slice(0, 4).map(l => l[1].trim());
         const puesto = parsePuestoFromLabels(labels);
-        if (puesto) puestoMap[`${pistaNombre}|${fechaKey}|${hora}`] = puesto;
+        if (puesto) puestoMap[`${pistaNombre}|${fechaKey}|${hora}`] = { puesto, matchId };
       }
     } catch (e) {
       console.error(`  Error puestos ${fechaParam}:`, e.message);
@@ -207,6 +208,13 @@ async function scrapeClub(club) {
           if (!start || !end || start < ahora) continue;
 
 
+          const _h = ocupacion.StrHoraInicio.replace(/^0/, "");
+          const _f = formatFecha(fecha);
+          const _entry =
+            puestoMap[`${columna.Id}|${_f}|${_h}`] ||
+            puestoMap[`${columna.TextoPrincipal}|${_f}|${_h}`] ||
+            null;
+
           pistas.push({
             id: `${club.id}-partida-${columna.Id}-${start}`,
             clubId: club.id,
@@ -214,6 +222,7 @@ async function scrapeClub(club) {
             ciudad: club.ciudad,
             lat: club.lat,
             lng: club.lng,
+            baseUrl: club.baseUrl,
             pista: columna.TextoPrincipal,
             tipo: "partida_abierta",
             fecha: formatFecha(fecha),
@@ -223,15 +232,8 @@ async function scrapeClub(club) {
             horaFin: end,
             nivel: ocupacion.Texto2 || null,
             plazasLibres: ocupacion.Texto1 ? parseInt(ocupacion.Texto1) : null,
-            puesto: (() => {
-              const h = ocupacion.StrHoraInicio.replace(/^0/, "");
-              const f = formatFecha(fecha);
-              return (
-                puestoMap[`${columna.Id}|${f}|${h}`] ||
-                puestoMap[`${columna.TextoPrincipal}|${f}|${h}`] ||
-                null
-              );
-            })(),
+            puesto: _entry?.puesto || null,
+            matchId: _entry?.matchId || null,
           });
         }
       }

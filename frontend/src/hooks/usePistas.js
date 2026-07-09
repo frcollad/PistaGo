@@ -35,8 +35,14 @@ function pistaToAlert(pista) {
         ? `${pista.plazasLibres} plaza${pista.plazasLibres !== 1 ? "s" : ""} libre${pista.plazasLibres !== 1 ? "s" : ""}`
         : "Plazas disponibles",
     nivel: pista.nivel || null,
+    level: pista.nivel || null,
     plazasLibres: pista.plazasLibres,
+    spots: pista.plazasLibres != null
+      ? `${pista.plazasLibres} plaza${pista.plazasLibres !== 1 ? "s" : ""}`
+      : null,
     puesto: pista.puesto || null,
+    matchId: pista.matchId || null,
+    baseUrl: pista.baseUrl || null,
     ago: "En vivo",
     button: esPista ? "Reservar" : "Apuntarme",
     color: esPista ? "blue" : "green",
