@@ -1,7 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
 import ClubImage from "../components/ClubImage";
-
-const JOIN_MATCH_URL = "https://europe-west1-pistago-app.cloudfunctions.net/joinMatch";
 
 function CourtSVG({ puesto, club }) {
   const p = (puesto || "").toLowerCase();
@@ -46,7 +43,7 @@ function InfoRow({ label, value }) {
   );
 }
 
-function DetailScreen({ selectedMatch, onBack, onGoToProfile }) {
+function DetailScreen({ selectedMatch, onBack }) {
   if (!selectedMatch) {
     return (
       <div className="empty-state">
@@ -59,52 +56,23 @@ function DetailScreen({ selectedMatch, onBack, onGoToProfile }) {
   }
 
   const esPista = selectedMatch.color === "blue";
-  const canAutoJoin = !esPista && !!selectedMatch.matchId;
+  const hasMatchUrl = !esPista && !!selectedMatch.matchId;
+  const hasWhatsapp = !!selectedMatch.whatsapp;
+  const twoButtons = hasMatchUrl && hasWhatsapp;
 
-  const creds = useMemo(() => {
-    try { return JSON.parse(localStorage.getItem("mp_creds") || "null"); }
-    catch { return null; }
-  }, []);
+  function openMatchpoint() {
+    window.open(
+      `${selectedMatch.baseUrl}/Matches/Join.aspx?id=${selectedMatch.matchId}`,
+      "_blank", "noopener,noreferrer"
+    );
+  }
 
-  const defaultPosicion = selectedMatch.puesto === "Derecha" ? "2"
-    : selectedMatch.puesto === "Revés" ? "3" : "4";
-
-  const [joinStep, setJoinStep] = useState("closed");
-  const [posicion, setPosicion] = useState(defaultPosicion);
-  const [pago, setPago] = useState("pago_en_centro");
-  const [joinError, setJoinError] = useState("");
-
-  useEffect(() => {
-    setPosicion(defaultPosicion);
-    setJoinStep("closed");
-  }, [selectedMatch]);
-
-  async function handleJoin() {
-    setJoinStep("loading");
-    try {
-      const res = await fetch(JOIN_MATCH_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          baseUrl: selectedMatch.baseUrl,
-          matchId: selectedMatch.matchId,
-          email: creds.email,
-          password: creds.password,
-          posicion,
-          formaPago: pago,
-        }),
-      });
-      const data = await res.json();
-      if (data.ok) {
-        setJoinStep("done");
-      } else {
-        setJoinError(data.error || "Error desconocido");
-        setJoinStep("error");
-      }
-    } catch (e) {
-      setJoinError("Error de red: " + e.message);
-      setJoinStep("error");
-    }
+  function openWhatsApp() {
+    const puesto = selectedMatch.puesto ? ` (${selectedMatch.puesto})` : "";
+    const msg = encodeURIComponent(
+      `Hola! Quiero apuntarme a la partida del ${selectedMatch.date} a las ${selectedMatch.time}${puesto}. ¿Hay plaza? 🎾`
+    );
+    window.open(`https://wa.me/${selectedMatch.whatsapp}?text=${msg}`, "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -187,87 +155,43 @@ function DetailScreen({ selectedMatch, onBack, onGoToProfile }) {
           </div>
         </div>
 
-        {!canAutoJoin && (
-          <div className="detail-notice">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
-            <p>Al {esPista ? "reservar" : "apuntarte"} serás redirigido a la plataforma oficial para completar tu reserva.</p>
-          </div>
-        )}
+        <div className="detail-notice">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>
+            {hasMatchUrl
+              ? "Se abrirá la web de Matchpoint en el navegador para confirmar tu inscripción."
+              : `Al ${esPista ? "reservar" : "apuntarte"} saldrás a la plataforma del club para completar la reserva.`}
+          </p>
+        </div>
 
-        <div style={{ height: 90 }} />
+        <div style={{ height: twoButtons ? 126 : 90 }} />
       </div>
 
       {/* Sticky CTA */}
       <div className="detail-cta">
-        {canAutoJoin ? (
-          <>
-            {joinStep === "closed" && (
-              <button className="detail-cta-btn" onClick={() => setJoinStep("select")}>
-                Apuntarme ahora →
-              </button>
-            )}
-
-            {joinStep === "select" && (
-              <div className="join-form">
-                {!creds && (
-                  <p className="join-notice">
-                    Añade tu cuenta Matchpoint en{" "}
-                    <button className="join-link" onClick={onGoToProfile}>Perfil</button>
-                    {" "}para apuntarte automáticamente.
-                  </p>
-                )}
-                <div className="join-row">
-                  <small>Posición</small>
-                  <div className="join-chips">
-                    {[["2","Derecha"],["3","Revés"],["4","Indiferente"]].map(([v, l]) => (
-                      <button key={v} className={`join-chip${posicion === v ? " join-chip--on" : ""}`} onClick={() => setPosicion(v)}>{l}</button>
-                    ))}
-                  </div>
-                </div>
-                <div className="join-row">
-                  <small>Pago</small>
-                  <div className="join-chips">
-                    <button className={`join-chip${pago === "pago_en_centro" ? " join-chip--on" : ""}`} onClick={() => setPago("pago_en_centro")}>En centro</button>
-                    <button className={`join-chip${pago === "pago_con_saldo" ? " join-chip--on" : ""}`} onClick={() => setPago("pago_con_saldo")}>Con saldo</button>
-                  </div>
-                </div>
-                <div className="join-actions">
-                  <button className="join-cancel" onClick={() => setJoinStep("closed")}>Cancelar</button>
-                  <button className="detail-cta-btn join-confirm" onClick={handleJoin} disabled={!creds}>
-                    Confirmar →
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {joinStep === "loading" && (
-              <div className="join-status">
-                <span className="join-spinner" />
-                <span>Inscribiendo en Matchpoint…</span>
-              </div>
-            )}
-
-            {joinStep === "done" && (
-              <div className="join-status join-status--ok">
-                <span>✓</span>
-                <span>¡Inscripción confirmada!</span>
-              </div>
-            )}
-
-            {joinStep === "error" && (
-              <div className="join-status join-status--err">
-                <p>{joinError}</p>
-                <button className="join-retry" onClick={() => setJoinStep("select")}>Reintentar</button>
-              </div>
-            )}
-          </>
-        ) : (
-          <button className="detail-cta-btn">
-            {esPista ? "Reservar en el club →" : "Apuntarme ahora →"}
-          </button>
-        )}
+        <div className="detail-cta-stack">
+          {hasMatchUrl && (
+            <button className="detail-cta-btn" onClick={openMatchpoint}>
+              Apuntarme en Matchpoint →
+            </button>
+          )}
+          {hasWhatsapp && (
+            <button className="detail-cta-btn detail-cta-btn--wa" onClick={openWhatsApp}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style={{flexShrink:0}}>
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.112 1.523 5.837L.057 23.175a.75.75 0 0 0 .916.906l5.42-1.461A11.942 11.942 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.686-.527-5.208-1.437l-.375-.224-3.843 1.035 1.055-3.742-.247-.388A9.955 9.955 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+              </svg>
+              WhatsApp al club
+            </button>
+          )}
+          {!hasMatchUrl && !hasWhatsapp && (
+            <button className="detail-cta-btn">
+              {esPista ? "Reservar en el club →" : "Apuntarme ahora →"}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

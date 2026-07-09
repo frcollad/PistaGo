@@ -43,6 +43,7 @@ function pistaToAlert(pista) {
     puesto: pista.puesto || null,
     matchId: pista.matchId || null,
     baseUrl: pista.baseUrl || null,
+    whatsapp: pista.whatsapp || null,
     ago: "En vivo",
     button: esPista ? "Reservar" : "Apuntarme",
     color: esPista ? "blue" : "green",

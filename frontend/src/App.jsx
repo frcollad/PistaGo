@@ -52,7 +52,6 @@ function App() {
             <DetailScreen
               selectedMatch={selectedMatch}
               onBack={goBackFromDetail}
-              onGoToProfile={() => setActiveScreen("Perfil")}
             />
           )}
 

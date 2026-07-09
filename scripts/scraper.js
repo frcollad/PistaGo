@@ -10,6 +10,7 @@ const CLUBS = [
     lng: -0.2830,
     baseUrl: "https://padellapoblaindoor.matchpoint.com.es",
     cuadros: [4],
+    whatsapp: "34667809637",
   },
   {
     id: "bonpadel",
@@ -19,6 +20,7 @@ const CLUBS = [
     lng: -0.3660,
     baseUrl: "https://bonpadel.matchpoint.com.es",
     cuadros: [4],
+    whatsapp: null,
   },
   {
     id: "interclubmeliana",
@@ -28,6 +30,7 @@ const CLUBS = [
     lng: -0.3414,
     baseUrl: "https://padelinterclubmeliana.matchpoint.com.es",
     cuadros: [4],
+    whatsapp: null,
   },
 ];
 
@@ -188,6 +191,8 @@ async function scrapeClub(club) {
               ciudad: club.ciudad,
               lat: club.lat,
               lng: club.lng,
+              baseUrl: club.baseUrl,
+              whatsapp: club.whatsapp || null,
               pista: columna.TextoPrincipal,
               tipo: "pista_libre",
               fecha: formatFecha(fecha),
@@ -223,6 +228,7 @@ async function scrapeClub(club) {
             lat: club.lat,
             lng: club.lng,
             baseUrl: club.baseUrl,
+            whatsapp: club.whatsapp || null,
             pista: columna.TextoPrincipal,
             tipo: "partida_abierta",
             fecha: formatFecha(fecha),
