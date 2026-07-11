@@ -4,17 +4,10 @@ function ResultCard({ pista, onShowDetail }) {
   const esPista = pista.color === "blue";
 
   const detail = {
-    id: pista.id,
-    type: pista.type,
-    club: pista.club,
-    city: pista.city,
-    date: pista.date,
-    time: pista.time,
+    ...pista,
     level: pista.nivel,
     spots: pista.info,
-    puesto: pista.puesto,
     source: "TPC Matchpoint",
-    color: pista.color,
   };
 
   return (

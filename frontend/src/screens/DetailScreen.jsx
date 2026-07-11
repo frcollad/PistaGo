@@ -61,10 +61,7 @@ function DetailScreen({ selectedMatch, onBack }) {
   const twoButtons = hasMatchUrl && hasWhatsapp;
 
   function openMatchpoint() {
-    window.open(
-      `${selectedMatch.baseUrl}/Matches/Join.aspx?id=${selectedMatch.matchId}`,
-      "_blank", "noopener,noreferrer"
-    );
+    window.location.href = `${selectedMatch.baseUrl}/Matches/Join.aspx?id=${selectedMatch.matchId}`;
   }
 
   function openWhatsApp() {
@@ -72,7 +69,7 @@ function DetailScreen({ selectedMatch, onBack }) {
     const msg = encodeURIComponent(
       `Hola! Quiero apuntarme a la partida del ${selectedMatch.date} a las ${selectedMatch.time}${puesto}. ¿Hay plaza? 🎾`
     );
-    window.open(`https://wa.me/${selectedMatch.whatsapp}?text=${msg}`, "_blank", "noopener,noreferrer");
+    window.location.href = `https://wa.me/${selectedMatch.whatsapp}?text=${msg}`;
   }
 
   return (
